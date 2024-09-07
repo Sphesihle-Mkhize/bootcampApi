@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bootcamp API Widgets</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f32ac1;
+      color: #db45b6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #e068cc;
+    }
+
+    .widget-container {
+      display: flex;
+      flex-direction: column;
+      background: #cf2697;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(238, 56, 192, 0.1);
+      max-width: 600px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dd52ba;
+      border-radius: 5px;
+      margin-top: 5px;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #ac43a3;
+      color: rgb(160, 49, 132);
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #b929a6;
+    }
+
+    .result {
+      background: #df49a0;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 15px;
+      font-size: 1.1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Bootcamp API Widgets</h1>
+
+  <!-- Word Game Widget -->
+  <div class="widget-container">
+    <h2>Word Game</h2>
+    <div class="form-group">
+      <label for="sentence">Enter a sentence for Word Game:</label>
+      <input type="text" id="sentence" placeholder="Type a sentence...">
+    </div>
+    <button onclick="getWordGameResults()">Analyze Sentence</button>
+    <div class="result" id="wordGameResult"></div>
+  </div>
+
+  <!-- Phone Bill Widget -->
+  <div class="widget-container">
+    <h2>Total Phone Bill</h2>
+    <div class="form-group">
+      <label for="bill">Enter bill commands (e.g. call,sms,call):</label>
+      <input type="text" id="bill" placeholder="call,sms,call">
+    </div>
+    <button onclick="getTotalPhoneBill()">Get Total Bill</button>
+    <div class="result" id="phoneBillResult"></div>
+  </div>
+
+  <!-- Enough Airtime Widget -->
+  <div class="widget-container">
+    <h2>Enough Airtime</h2>
+    <div class="form-group">
+      <label for="usage">Enter usage (e.g. call,sms,call):</label>
+      <input type="text" id="usage" placeholder="call,sms,call">
+    </div>
+    <div class="form-group">
+      <label for="available">Enter available airtime (e.g. 50):</label>
+      <input type="number" id="available" placeholder="Available airtime">
+    </div>
+    <button onclick="checkEnoughAirtime()">Check Airtime</button>
+    <div class="result" id="enoughAirtimeResult"></div>
+  </div>
+
+  <script>
+    // Word Game API call
+    async function getWordGameResults() {
+      const sentence = document.getElementById('sentence').value;
+      const response = await fetch(`/api/word_game?sentence=${sentence}`);
+      const data = await response.json();
+
+      document.getElementById('wordGameResult').innerHTML = `
+        Longest Word: ${data.longestWord}<br>
+        Shortest Word: ${data.shortestWord}<br>
+        Sum: ${data.sum}
+      `;
+    }
+
+    // Total Phone Bill API call
+    async function getTotalPhoneBill() {
+      const bill = document.getElementById('bill').value;
+      const response = await fetch('/api/phonebill/total', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ bill })
+      });
+      const data = await response.json();
+
+      document.getElementById('phoneBillResult').innerHTML = `Total: R${data.total.toFixed(2)}`;
+    }
+
+    // Enough Airtime API call
+    async function checkEnoughAirtime() {
+      const usage = document.getElementById('usage').value;
+      const available = document.getElementById('available').value;
+      const response = await fetch('/api/enough', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ usage, available })
+      });
+      const data = await response.json();
+
+      document.getElementById('enoughAirtimeResult').innerHTML = `Remaining Airtime: R${data.result.toFixed(2)}`;
+    }
+  </script>
+</body>
+</html>
